@@ -1,0 +1,161 @@
+{
+  "type": "object",
+  "required": [
+    "seller",
+    "invoice_number",
+    "invoice_date",
+    "currency",
+    "amount",
+    "vat_amount",
+    "withholding_tax_amount",
+    "line_items"
+  ],
+  "properties": {
+    "seller": {
+      "type": "object",
+      "required": [
+        "name",
+        "vat_id"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "vat_id": {
+          "type": "string"
+        },
+        "contact": {
+          "type": "object",
+          "properties": {
+            "person_name": {
+              "type": "string"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            }
+          }
+        },
+        "address": {
+          "type": "object",
+          "properties": {
+            "postcode": {
+              "type": "string"
+            },
+            "street": {
+              "type": "string"
+            },
+            "city": {
+              "type": "string"
+            },
+            "country": {
+              "type": "string"
+            },
+            "europe": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "buyer": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "vat_id": {
+          "type": "string"
+        },
+        "contact": {
+          "type": "object",
+          "properties": {
+            "person_name": {
+              "type": "string"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            }
+          }
+        },
+        "address": {
+          "type": "object",
+          "properties": {
+            "postcode": {
+              "type": "string"
+            },
+            "street": {
+              "type": "string"
+            },
+            "city": {
+              "type": "string"
+            },
+            "country": {
+              "type": "string"
+            },
+            "europe": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "invoice_number": {
+      "type": "string"
+    },
+    "invoice_date": {
+      "type": "string"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "vat_amount": {
+      "type": "number"
+    },
+    "withholding_tax_amount": {
+      "type": "number"
+    },
+    "line_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "description",
+          "quantity",
+          "unit_price",
+          "vat_rate",
+          "price_includes_vat",
+          "withholding_tax_rate"
+        ],
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "unit_price": {
+            "type": "number"
+          },
+          "vat_rate": {
+            "type": "number"
+          },
+          "price_includes_vat": {
+            "type": "boolean"
+          },
+          "withholding_tax_rate": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+}

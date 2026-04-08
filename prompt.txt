@@ -1,0 +1,163 @@
+Extrae los siguientes campos y devuélvelos en un JSON con la estructura exacta requerida por nuestra API de Factur-X.
+
+CRÍTICO: Debes generar el JSON COMPLETO. No pares hasta cerrar todos los corchetes y llaves. Si el contenido es largo, continúa hasta el final.
+
+═══════════════════════════════════════════════════
+LOCALIZACIÓN DE VENDEDOR Y COMPRADOR
+═══════════════════════════════════════════════════
+
+Las facturas tienen un LAYOUT ESTÁNDAR de dos zonas:
+
+  ZONA A - Encabezado superior derecho (recuadro gris):
+    → Contiene los datos del COMPRADOR: nombre, NIF, dirección, teléfono.
+
+  ZONA B - Pie de página (última sección del documento):
+    → Contiene los datos del VENDEDOR: nombre legal, NIF/CIF, dirección, IBAN.
+    → Ejemplo de texto en pie de página:
+      "OVH HISPANO S.L. · C/ Alcalá 21, 5ª planta · 28014 Madrid (España) · NIF: B83834747"
+    → Debes distribuir ese texto en los sub-campos correctos:
+        seller.name    = "OVH HISPANO S.L."
+        seller.vat_id  = "B83834747"
+        seller.address.street   = "C/ Alcalá 21, 5ª planta"
+        seller.address.city     = "Madrid"
+        seller.address.postcode = "28014"
+        seller.address.country  = "ES"
+        seller.address.europe   = "Y"
+
+REGLA: Si encuentras datos de dirección del vendedor en el pie de página,
+SIEMPRE debes rellenar seller.address con esos datos. No los omitas ni los
+mezcles dentro de seller.name.
+
+REGLA: Si el comprador aparece en un recuadro con nombre + NIF + dirección,
+SIEMPRE debes rellenar el objeto buyer completo.
+El buyer es OBLIGATORIO cuando hay un recuadro de destinatario/facturar-a.
+
+═══════════════════════════════════════════════════
+CAMPOS A EXTRAER
+═══════════════════════════════════════════════════
+
+1. seller (OBLIGATORIO):
+   - name: Nombre legal de la empresa vendedora
+   - vat_id: NIF/CIF sin prefijos de país. Eliminar siempre los prefijos "ES", "FR", "DE", etc.
+     Ejemplos: "ESB83834747" → "B83834747" / "ESB65779282" → "B65779282"
+   - address (rellenar si se encuentra en el documento):
+       postcode, street, city, country (código ISO), europe (Y/N)
+   - contact (rellenar si se encuentra en el documento):
+       person_name, phone (con +34 si es España), email
+
+2. buyer (OBLIGATORIO si hay recuadro de destinatario):
+   - name, vat_id (sin prefijos de país, igual que seller.vat_id)
+   - address: postcode, street, city, country, europe
+   - contact: person_name, phone, email
+
+3. invoice_number: número de factura tal como aparece
+4. invoice_date: fecha en formato YYYY-MM-DD
+5. currency: "EUR" para facturas en España
+6. amount: importe total SIN IVA — buscar "Base imponible", "Subtotal", "Importe sin IVA"
+7. vat_amount: importe total del IVA — buscar "IVA", "Impuestos", "Tax"
+8. withholding_tax_amount:
+   - Si hay retención (IRPF, retención alquiler, retención profesional, etc.),
+     poner el importe en NEGATIVO. Ejemplo: retención 15% de 284,47€ → -284.47
+   - Si no hay retención: 0
+
+9. line_items (una entrada por cada línea de la factura):
+   - description: texto COMPLETO de la línea tal como aparece en la factura.
+     Incluir referencias, UUIDs, códigos de servicio y períodos de vigencia sin truncar.
+   - quantity: cantidad (usar 1 si no se especifica)
+   - unit_price: precio unitario TAL COMO APARECE. Los descuentos tienen precio NEGATIVO.
+   - vat_rate: porcentaje de IVA (usar 21.0 si no aparece explícitamente)
+   - price_includes_vat: true o false (ver reglas abajo)
+   - withholding_tax_rate: porcentaje de retención en negativo (ej: -15.0), o 0 si no aplica
+
+═══════════════════════════════════════════════════
+REGLAS PARA price_includes_vat
+═══════════════════════════════════════════════════
+
+REGLA 1 — PRIORIDAD MÁXIMA: Si vat_rate es 0.0, price_includes_vat es SIEMPRE false.
+
+REGLA 2 — PRIORIDAD ALTA: Facturas B2B con "Base imponible" explícita:
+  Si la factura muestra un resumen con "Base imponible" (o "Subtotal") en una línea
+  y "IVA X%" en otra línea separada, los precios unitarios son SIN IVA.
+  → price_includes_vat: false para TODAS las líneas de esa factura, sin excepción.
+  Esta regla tiene prioridad sobre cualquier cálculo matemático.
+
+REGLA 3 — Verificación matemática (SOLO si la factura no tiene "Base imponible" explícita):
+  - Si sum(quantity × unit_price) ≈ total CON IVA → price_includes_vat: true
+  - Si sum(quantity × unit_price) ≈ total SIN IVA → price_includes_vat: false
+
+REGLA 4: NO hagas conversiones de precios. Deja los valores tal como aparecen.
+  La API se encarga de los cálculos.
+
+═══════════════════════════════════════════════════
+REGLAS PARA line_items
+═══════════════════════════════════════════════════
+
+- NO agrupes líneas aunque sean similares o idénticas.
+- Cada línea de la factura es un elemento independiente en el array.
+- Si hay 4 líneas con el mismo nombre pero UUIDs distintos, son 4 elementos separados.
+- Las líneas de descuento/regalo (GIFT) son líneas normales con unit_price negativo.
+
+═══════════════════════════════════════════════════
+ESTRUCTURA JSON REQUERIDA
+═══════════════════════════════════════════════════
+
+{
+  "seller": {
+    "name": "Nombre del proveedor",
+    "vat_id": "XXXXXXXX",
+    "address": {
+      "postcode": "XXXXX",
+      "street": "Dirección completa",
+      "city": "Ciudad",
+      "country": "ES",
+      "europe": "Y"
+    },
+    "contact": {
+      "person_name": "",
+      "phone": "+34 XXX XX XX XX",
+      "email": "email@empresa.com"
+    }
+  },
+  "buyer": {
+    "name": "Nombre del comprador",
+    "vat_id": "XXXXXXXX",
+    "address": {
+      "postcode": "XXXXX",
+      "street": "Dirección completa",
+      "city": "Ciudad",
+      "country": "ES",
+      "europe": "Y"
+    },
+    "contact": {
+      "person_name": "",
+      "phone": "+34 XXX XX XX XX",
+      "email": ""
+    }
+  },
+  "invoice_number": "Número de factura",
+  "invoice_date": "YYYY-MM-DD",
+  "currency": "EUR",
+  "amount": 0.00,
+  "vat_amount": 0.00,
+  "withholding_tax_amount": 0.00,
+  "line_items": [
+    {
+      "description": "Descripción completa del producto o servicio",
+      "quantity": 1,
+      "unit_price": 0.00,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    }
+  ]
+}
+
+═══════════════════════════════════════════════════
+RECORDATORIO FINAL
+═══════════════════════════════════════════════════
+
+- Responde ÚNICAMENTE con el JSON completo y válido.
+- No añadas texto, markdown ni comentarios antes ni después del JSON.
+- No te detengas hasta cerrar la llave final }.
+- Redondea todos los valores monetarios a 2 decimales.
+- Para facturas de proveedores extranjeros: usa el country code del país del vendedor.

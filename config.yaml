@@ -1,0 +1,13 @@
+lmstudio:
+  base_url: "http://localhost:1234/v1"
+  api_key: "lm-studio"   # LM Studio no requiere clave real
+  model: "mistralai/ministral-3-3b"  # nombre exacto del modelo en LM Studio
+
+processing:
+  dpi: 300             # resolución para convertir PDF a imagen
+  first_page_only: false  # true = solo procesa la primera página
+
+extraction:
+  prompt_file: "prompt.txt"      # system prompt enviado al modelo
+  schema_file: "schema.json"     # JSON schema para structured output
+
