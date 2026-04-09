@@ -1,0 +1,152 @@
+{
+  "seller": {
+    "name": "OVH HISPANO S.L.",
+    "vat_id": "B83834747",
+    "address": {
+      "postcode": "28014",
+      "street": "C/ Alcalá 21, 5ª planta",
+      "city": "Madrid",
+      "country": "ES",
+      "europe": "Y"
+    }
+  },
+  "invoice_number": "ES3970571",
+  "invoice_date": "2025-09-01",
+  "currency": "EUR",
+  "amount": 143.85,
+  "vat_amount": 30.21,
+  "withholding_tax_amount": 0.0,
+  "line_items": [
+    {
+      "description": "[EUROPE] Additional IPv4 RIPE 1 month (ip-188.165.134.133) Del 01-09-2025 al 30-09-2025 Sin compromiso",
+      "quantity": 1,
+      "unit_price": 1.5,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "[EUROPE] Additional IPv4 RIPE 1 month (ip-217.182.10.52) Del 01-09-2025 al 30-09-2025 Sin compromiso",
+      "quantity": 1,
+      "unit_price": 1.5,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "[EUROPE] Additional IPv4 RIPE 1 month (ip-87.98.227.152) Del 01-09-2025 al 30-09-2025 Sin compromiso",
+      "quantity": 1,
+      "unit_price": 1.5,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "[EUROPE] Additional IPv4 RIPE 1 month (ip-94.23.80.202) Del 01-09-2025 al 30-09-2025 Sin compromiso",
+      "quantity": 1,
+      "unit_price": 1.5,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "ceroil.fr - fr renewal request - 12 meses Del 12-09-2025 al 11-09-2026 Sin compromiso",
+      "quantity": 1,
+      "unit_price": 7.79,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "ceroil.pl - pl renewal request - 12 meses Del 12-09-2025 al 11-09-2026 Sin compromiso",
+      "quantity": 1,
+      "unit_price": 13.09,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "rakelgibanel.com - .com renewal request - 12 meses Del 14-09-2025 al 13-09-2026 Sin compromiso",
+      "quantity": 1,
+      "unit_price": 13.49,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "2x SSD NVMe 512GB Enterprise Class Soft RAID rental for 1 month Del 01-09-2025 al 30-09-2025 Fecha de finalización del compromiso : 26/11/2025",
+      "quantity": 1,
+      "unit_price": 0,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "32GB DDR4 ECC 2400MHz rental for 1 month Del 01-09-2025 al 30-09-2025 Fecha de finalización del compromiso : 26/11/2025",
+      "quantity": 1,
+      "unit_price": 0,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "Unlimited traffic - 500Mbps bandwidth rental for 1 month Del 01-09-2025 al 30-09-2025 Fecha de finalización del compromiso : 26/11/2025",
+      "quantity": 1,
+      "unit_price": 0,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "Unlimited traffic - 500Mbps bandwidth rental for 1 month Del 01-09-2025 al 30-09-2025 Fecha de finalización del compromiso : 10/03/2026",
+      "quantity": 1,
+      "unit_price": 0,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "64GB DDR4 ECC 2133MHz rental for 1 month Del 01-09-2025 al 30-09-2025 Fecha de finalización del compromiso : 10/03/2026",
+      "quantity": 1,
+      "unit_price": 0,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "2x SSD NVMe 450GB Datacenter Class Soft RAID rental for 1 month Del 01-09-2025 al 30-09-2025 Fecha de finalización del compromiso : 10/03/2026",
+      "quantity": 1,
+      "unit_price": 0,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "RISE-LE-1 rental for 1 month (ns3020517.ip-149-202-85.eu) Del 01-09-2025 al 30-09-2025 Fecha de finalización del compromiso: 26/11/2025",
+      "quantity": 1,
+      "unit_price": 49.49,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "RISE-LE-2 rental for 1 month (ns326130.ip-37-187-158.eu) Del 01-09-2025 al 30-09-2025 Fecha de finalización del compromiso: 10/03/2026",
+      "quantity": 1,
+      "unit_price": 53.99,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    }
+  ],
+  "buyer": {
+    "name": "Zhitek Consultoria Tencologica SL",
+    "vat_id": "ESB65779282",
+    "address": {
+      "postcode": "25700",
+      "street": "c/ de la Sort 11, 1r",
+      "city": "La Seu d'Urgell",
+      "country": "ES",
+      "europe": "Y"
+    }
+  }
+}

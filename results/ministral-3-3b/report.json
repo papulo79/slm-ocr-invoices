@@ -1,0 +1,92 @@
+{
+  "best_score": 0.9441,
+  "total_elapsed": 3544.5,
+  "dataset_size": 24,
+  "iterations_run": 12,
+  "iterations": [
+    {
+      "iteration": 1,
+      "mean_total": 0.9126,
+      "issues_count": 13,
+      "accepted": true,
+      "elapsed": 275.0
+    },
+    {
+      "iteration": 2,
+      "mean_total": 0.9441,
+      "issues_count": 9,
+      "accepted": true,
+      "elapsed": 274.9
+    },
+    {
+      "iteration": 3,
+      "mean_total": 0.8547,
+      "issues_count": 14,
+      "accepted": false,
+      "elapsed": 270.1
+    },
+    {
+      "iteration": 4,
+      "mean_total": 0.7893,
+      "issues_count": 35,
+      "accepted": false,
+      "elapsed": 247.6
+    },
+    {
+      "iteration": 5,
+      "mean_total": 0.8115,
+      "issues_count": 29,
+      "accepted": false,
+      "elapsed": 235.8
+    },
+    {
+      "iteration": 6,
+      "mean_total": 0.8592,
+      "issues_count": 19,
+      "accepted": false,
+      "elapsed": 240.2
+    },
+    {
+      "iteration": 7,
+      "mean_total": 0.8153,
+      "issues_count": 21,
+      "accepted": false,
+      "elapsed": 227.7
+    },
+    {
+      "iteration": 8,
+      "mean_total": 0.8532,
+      "issues_count": 16,
+      "accepted": false,
+      "elapsed": 235.2
+    },
+    {
+      "iteration": 9,
+      "mean_total": 0.8433,
+      "issues_count": 21,
+      "accepted": false,
+      "elapsed": 234.9
+    },
+    {
+      "iteration": 10,
+      "mean_total": 0.7923,
+      "issues_count": 24,
+      "accepted": false,
+      "elapsed": 240.8
+    },
+    {
+      "iteration": 11,
+      "mean_total": 0.7454,
+      "issues_count": 35,
+      "accepted": false,
+      "elapsed": 235.0
+    },
+    {
+      "iteration": 12,
+      "mean_total": 0.7149,
+      "issues_count": 34,
+      "accepted": false,
+      "elapsed": 250.7
+    }
+  ]
+}

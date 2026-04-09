@@ -1,0 +1,29 @@
+{
+  "seller": {
+    "name": "OVH HISPANO S.L.",
+    "vat_id": "B83834747",
+    "address": {
+      "postcode": "28014",
+      "street": "C/ Alcalá 21, 5ª planta",
+      "city": "Madrid",
+      "country": "ES",
+      "europe": "Y"
+    }
+  },
+  "invoice_number": "ES3932927",
+  "invoice_date": "2025-07-24",
+  "currency": "EUR",
+  "amount": 104.88,
+  "vat_amount": 22.02,
+  "withholding_tax_amount": 0.0,
+  "line_items": [
+    {
+      "description": "VLE-4 12 months fees Del 24/07/2025 al 23/07/2026 (5in compromiso)",
+      "quantity": 1,
+      "unit_price": 104.88,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    }
+  ]
+}

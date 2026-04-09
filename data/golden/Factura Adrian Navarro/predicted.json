@@ -1,0 +1,40 @@
+{
+  "seller": {
+    "name": "Zhintek Consultoria Tecnologica S.L.",
+    "vat_id": "B65779282",
+    "address": {
+      "postcode": "25700",
+      "street": "CARRE SORT, NUM. 11 PLANTA 1, PUERTA 1",
+      "city": "SEU D'URGELL (LA)",
+      "country": "ES",
+      "europe": "Y"
+    }
+  },
+  "invoice_number": "2025/012",
+  "invoice_date": "2025-04-11",
+  "currency": "EUR",
+  "amount": 6146.91,
+  "vat_amount": 1290.85,
+  "withholding_tax_amount": -922.04,
+  "line_items": [
+    {
+      "description": "Total honorarios profesionales: (sin desglose de líneas individuales)",
+      "quantity": 1,
+      "unit_price": 6146.91,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": -15.0
+    }
+  ],
+  "buyer": {
+    "name": "ADRIÁN NAVARRO DÍAZ",
+    "vat_id": "53291244Z",
+    "address": {
+      "postcode": "",
+      "street": "Pg. Mas Roig, 45",
+      "city": "Barcelona",
+      "country": "ES",
+      "europe": "Y"
+    }
+  }
+}

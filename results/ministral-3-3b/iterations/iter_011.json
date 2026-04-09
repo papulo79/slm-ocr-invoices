@@ -1,0 +1,698 @@
+{
+  "iteration": 11,
+  "accepted": false,
+  "mean_total": 0.7454,
+  "mean_scores": {
+    "seller_vat": 0.4167,
+    "seller_name": 0.5999,
+    "buyer_vat": 0.7917,
+    "buyer_name": 0.9057,
+    "invoice_number": 0.9917,
+    "invoice_date": 0.9583,
+    "amount": 0.9167,
+    "vat_amount": 1.0,
+    "line_descriptions": 0.6335,
+    "line_prices": 0.8411
+  },
+  "issues_count": 35,
+  "elapsed": 234.96620082855225,
+  "prompt": "Extrae los siguientes campos de facturas españolas en formato JSON para API Factur-X.\n═══════════════════════════════════════════════════\nREGLAS CRÍTICAS DE EXTRACCIÓN\n═══════════════════════════════════════════════════\nREGLA 1: DIFERENCIAR seller.vat_id DE buyer.vat_id\n→ seller.vat_id: BUSCAR SOLO en PIE de factura (zona inferior, cerca de sellos, firma, datos bancarios o texto \"Vendedor:\", \"Emisor:\", \"TAX ID:\", \"NIF Emisor:\")\n→ buyer.vat_id: BUSCAR SOLO en ENCABEZADO (parte superior, datos del cliente, texto \"Comprador:\", \"Cliente:\", \"NIF:\", \"CIF:\", \"N.I.F.:\")\n→ NUNCA usar el mismo valor para ambos campos\n→ VERIFICACIÓN FINAL: seller.vat_id ≠ buyer.vat_id SIEMPRE\n\nREGLA 2: FORMATO seller.vat_id — 9 CARACTERES EXACTOS\n→ Empresa española: B + 8 dígitos → B65779282, B83834747\n→ Persona física española: 8 dígitos + letra → 37322251J, 53291244Z\n→ COPIAR LITERALMENTE cada carácter incluyendo B inicial si existe\n→ Si aparece \"ES\" + 9 dígitos → extraer SOLO los 9 dígitos sin \"ES\"\n→ VERIFICACIÓN OBLIGATORIA: resultado = 9 caracteres exactos\n→ CUIDADO EXTREMO: \"B883834747\" (10 dígitos) es INCORRECTO, debe ser \"B83834747\" (9)\n\nREGLA 3: buyer.vat_id — COPIAR SEGÚN APARECE EN DOCUMENTO\n→ Después de \"NIF:\", \"CIF:\", \"N.I.F.\" en ENCABEZADO → extraer valor completo\n→ Si tiene \"ES\" conservarlo: \"ESB65779282\"\n→ Si no tiene \"ES\": \"B65779282\"\n→ VERIFICACIÓN: buyer.vat_id ≠ seller.vat_id\n\nREGLA 4: DISTINGUIR B DE 8\n→ \"B\" (letra) tiene dos protuberancias superiores abiertas\n→ \"8\" (dúmero) tiene cierre completo\n→ En NIF/CIF español, el primer carácter NUNCA es \"8\" para empresas\n→ \"ESB65779282\" contiene B (letra) seguido de 65779282 → NO \"ES865779282\"\n→ REGLA ABSOLUTA: NUNCA escribir \"8\" como primer carácter de un vat_id español de empresa\n\nREGLA 5: COPIAR DESCRIPCIONES DE PRODUCTOS ÍNTEGRAMAS\n→ Cada fila de producto = UNA entrada en line_items\n→ COPIAR TODO el texto sin truncar: descripciones, fechas, referencias entre paréntesis\n→ Ejemplos de提取: \"VPS Limited Edition 4 vCPU 4 GB RAM 80 GB disk\", \"OS Linux 12 months fees Del 24-07-2025 al 23-07-2026 Sin compromiso\", \"DNS Zone - Renew Del 01-01-2025 al 31-12-2025\"\n→ Si descripción ocupa varias líneas → unir en una sola línea\n→ Si no hay descripción → \"(sin descripción disponible)\"\n→ IMPORTANTE: campos description NUNCA deben estar vacíos\n\nREGLA 6: JAMÁS DEJAR CAMPOS VACÍOS\n→ Si un valor está en el documento → extraerlo\n→ Si no se encuentra tras búsqueda exhaustiva → usar valor plausible según contexto\n→ seller.vat_id y buyer.vat_id NUNCA deben estar vacíos\n═══════════════════════════════════════════════════\nIDENTIFICACIÓN DE NIF/CIF — VERIFICACIÓN OBLIGATORIA\n═══════════════════════════════════════════════════\nSELLER (PIE de factura):\n→ Formato: 9 caracteres exactos\n→ Si ves \"37322251J\" → es NIF de persona física → seller.vat_id correcto\n→ Si ves \"B83834747\" → es CIF de empresa → seller.vat_id correcto\n→ VERIFICACIÓN: seller ≠ buyer\n\nBUYER (ENCABEZADO, parte superior):\n→ Formato: copiar exactamente como aparece en documento\n→ Puede tener prefijo \"ES\" o no\n═══════════════════════════════════════════════════\nCAMPOS A EXTRAER\n═══════════════════════════════════════════════════\n1. seller: name, vat_id (9 caracteres exactos del PIE), address, contact\n2. buyer: name, vat_id (del ENCABEZADO), address, contact\n3. invoice_number, invoice_date (YYYY-MM-DD), currency (\"EUR\")\n4. amount (total sin IVA), vat_amount, withholding_tax_amount (0 si no existe)\n5. line_items (UNA entrada por cada fila de producto/servicio):\n   - description: COPIAR ÍNTEGRO sin truncar\n   - quantity (1 si no se especifica), unit_price, vat_rate (21.0 por defecto)\n   - price_includes_vat, withholding_tax_rate\n═══════════════════════════════════════════════════\nCHECKLIST FINAL\n═══════════════════════════════════════════════════\n□ seller.vat_id del PIE, 9 caracteres exactos, con B si es empresa\n□ seller.vat_id tiene exactamente 9 caracteres\n□ buyer.vat_id del ENCABEZADO, DIFERENTE de seller\n□ buyer.vat_id copiado según aparece, con \"ES\" si existe\n□ B no se confunde con 8 en vat_id\n□ Todas las descripciones copiadas íntegramente\n□ TODAS las filas de productos tienen entry en line_items\n□ Campos description NUNCA vacíos\n□ JSON completo y válido\n═══════════════════════════════════════════════════\nESTRUCTURA JSON\n═══════════════════════════════════════════════════\n{\n  \"seller\": {\"name\": \"\", \"vat_id\": \"\", \"address\": {\"postcode\": \"\", \"street\": \"\", \"city\": \"\", \"country\": \"ES\", \"europe\": \"Y\"}, \"contact\": {\"person_name\": \"\", \"phone\": \"\", \"email\": \"\"}},\n  \"buyer\": {\"name\": \"\", \"vat_id\": \"\", \"address\": {\"postcode\": \"\", \"street\": \"\", \"city\": \"\", \"country\": \"ES\", \"europe\": \"Y\"}, \"contact\": {\"person_name\": \"\", \"phone\": \"\", \"email\": \"\"}},\n  \"invoice_number\": \"\", \"invoice_date\": \"YYYY-MM-DD\", \"currency\": \"EUR\",\n  \"amount\": 0.00, \"vat_amount\": 0.00, \"withholding_tax_amount\": 0.00,\n  \"line_items\": [\n    {\"description\": \"\", \"quantity\": 1, \"unit_price\": 0.00, \"vat_rate\": 21.0, \"price_includes_vat\": false, \"withholding_tax_rate\": 0.0}\n  ]\n}\nResponde ÚNICAMENTE con JSON válido. Sin texto adicional.",
+  "per_sample": [
+    {
+      "sample": "28-25 Zhintek MMT IVA",
+      "scores": {
+        "seller_vat": 1.0,
+        "seller_name": 0.26666666666666666,
+        "buyer_vat": 1.0,
+        "buyer_name": 0.9859154929577465,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.9705882352941176,
+        "line_prices": 0.5
+      },
+      "total_score": 0.9009,
+      "issues": []
+    },
+    {
+      "sample": "29-25 Zhintek Helvetia IVA",
+      "scores": {
+        "seller_vat": 1.0,
+        "seller_name": 0.26666666666666666,
+        "buyer_vat": 1.0,
+        "buyer_name": 0.9722222222222222,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.47788018433179724,
+        "line_prices": 1.0
+      },
+      "total_score": 0.8611,
+      "issues": []
+    },
+    {
+      "sample": "31-25 Zhintek MMT IVA",
+      "scores": {
+        "seller_vat": 0.0,
+        "seller_name": 0.26666666666666666,
+        "buyer_vat": 1.0,
+        "buyer_name": 0.9859154929577465,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.9705882352941176,
+        "line_prices": 0.5
+      },
+      "total_score": 0.7009,
+      "issues": [
+        {
+          "field": "seller.vat_id",
+          "type": "mismatch",
+          "expected": "37322251J",
+          "actual": "B37322251J",
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "sample": "32-25 Zhintek Helvetia IVA",
+      "scores": {
+        "seller_vat": 0.0,
+        "seller_name": 0.26666666666666666,
+        "buyer_vat": 1.0,
+        "buyer_name": 0.9722222222222222,
+        "invoice_number": 0.8,
+        "invoice_date": 1.0,
+        "amount": 0.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.2857142857142857,
+        "line_prices": 0.5
+      },
+      "total_score": 0.4812,
+      "issues": [
+        {
+          "field": "seller.vat_id",
+          "type": "mismatch",
+          "expected": "37322251J",
+          "actual": "B80029001",
+          "severity": "medium"
+        },
+        {
+          "field": "line_items[1].description",
+          "type": "missing_item",
+          "expected": "Gastos",
+          "actual": "",
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "sample": "ES3918050",
+      "scores": {
+        "seller_vat": 1.0,
+        "seller_name": 0.4,
+        "buyer_vat": 1.0,
+        "buyer_name": 1.0,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.6091142191142191,
+        "line_prices": 1.0
+      },
+      "total_score": 0.8934,
+      "issues": []
+    },
+    {
+      "sample": "ES3924835",
+      "scores": {
+        "seller_vat": 1.0,
+        "seller_name": 0.5614035087719298,
+        "buyer_vat": 1.0,
+        "buyer_name": 1.0,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.702063521660762,
+        "line_prices": 1.0
+      },
+      "total_score": 0.9202,
+      "issues": [
+        {
+          "field": "line_items[1].description",
+          "type": "truncation",
+          "expected": "Free starter account with domain Del 10-07-2025 al 09-08-2025 (Referencia: 1c4b3c5a-e378-4de4-a3f3-25344eb14ccd)",
+          "actual": "Free starter account with domain Del 10-07-2025 al 09-08-2025",
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "sample": "ES3926195",
+      "scores": {
+        "seller_vat": 0.0,
+        "seller_name": 0.5614035087719298,
+        "buyer_vat": 0.0,
+        "buyer_name": 0.9705882352941176,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.6548672566371682,
+        "line_prices": 1.0
+      },
+      "total_score": 0.6111,
+      "issues": [
+        {
+          "field": "seller.vat_id",
+          "type": "mismatch",
+          "expected": "B83834747",
+          "actual": "B883834747",
+          "severity": "medium"
+        },
+        {
+          "field": "buyer.vat_id",
+          "type": "ocr_confusion",
+          "subtype": "letter_vs_number",
+          "expected": "ESB65779282",
+          "actual": "ES865779282",
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "sample": "ES3929424",
+      "scores": {
+        "seller_vat": 0.0,
+        "seller_name": 0.5614035087719298,
+        "buyer_vat": 0.0,
+        "buyer_name": 1.0,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.9508196721311476,
+        "line_prices": 1.0
+      },
+      "total_score": 0.6575,
+      "issues": [
+        {
+          "field": "seller.vat_id",
+          "type": "mismatch",
+          "expected": "B83834747",
+          "actual": "B883834747",
+          "severity": "medium"
+        },
+        {
+          "field": "buyer.vat_id",
+          "type": "mismatch",
+          "expected": "ESB65779282",
+          "actual": "ES B65779282",
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "sample": "ES3932927",
+      "scores": {
+        "seller_vat": 0.0,
+        "seller_name": 1.0,
+        "buyer_vat": 1.0,
+        "buyer_name": 0.9552238805970149,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.22692307692307692,
+        "line_prices": 0.25
+      },
+      "total_score": 0.6284,
+      "issues": [
+        {
+          "field": "seller.vat_id",
+          "type": "mismatch",
+          "expected": "B83834747",
+          "actual": "B883834747",
+          "severity": "medium"
+        },
+        {
+          "field": "line_items[1].description",
+          "type": "missing_item",
+          "expected": "VPS Limited Edition 4 vCPU 4 GB RAM 80 GB disk",
+          "actual": "",
+          "severity": "high"
+        },
+        {
+          "field": "line_items[2].description",
+          "type": "missing_item",
+          "expected": "OS Linux 12 months fees Del 24-07-2025 al 23-07-2026 Sin compromiso",
+          "actual": "",
+          "severity": "high"
+        },
+        {
+          "field": "line_items[3].description",
+          "type": "missing_item",
+          "expected": "Vps with linux distribution",
+          "actual": "",
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "sample": "ES3934034",
+      "scores": {
+        "seller_vat": 0.0,
+        "seller_name": 1.0,
+        "buyer_vat": 0.0,
+        "buyer_name": 1.0,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 0.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.780994415420645,
+        "line_prices": 1.0
+      },
+      "total_score": 0.5671,
+      "issues": [
+        {
+          "field": "seller.vat_id",
+          "type": "mismatch",
+          "expected": "B83834747",
+          "actual": "B883834747",
+          "severity": "medium"
+        },
+        {
+          "field": "buyer.vat_id",
+          "type": "ocr_confusion",
+          "subtype": "letter_vs_number",
+          "expected": "ESB65779282",
+          "actual": "ES865779282",
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "sample": "ES3950074",
+      "scores": {
+        "seller_vat": 1.0,
+        "seller_name": 0.4,
+        "buyer_vat": 1.0,
+        "buyer_name": 1.0,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.6919945309374208,
+        "line_prices": 0.7692307692307693
+      },
+      "total_score": 0.8896,
+      "issues": [
+        {
+          "field": "line_items[12].description",
+          "type": "missing_item",
+          "expected": "RISLE.LE-2 rental for 1 month Del 01-08-2025 al 31-08-2025 Fecha de finalización del compromiso: 10/03/2026 tsbshare ns326130.ip-37-187-158.eu",
+          "actual": "",
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "sample": "ES3952091",
+      "scores": {
+        "seller_vat": 1.0,
+        "seller_name": 0.4,
+        "buyer_vat": 1.0,
+        "buyer_name": 1.0,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.9508196721311475,
+        "line_prices": 1.0
+      },
+      "total_score": 0.9446,
+      "issues": []
+    },
+    {
+      "sample": "ES3957184",
+      "scores": {
+        "seller_vat": 1.0,
+        "seller_name": 0.5614035087719298,
+        "buyer_vat": 1.0,
+        "buyer_name": 1.0,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.702063521660762,
+        "line_prices": 1.0
+      },
+      "total_score": 0.9202,
+      "issues": [
+        {
+          "field": "line_items[1].description",
+          "type": "truncation",
+          "expected": "Free starter account with domain Del 10-08-2025 al 09-09-2025 (Referencia: 1c4b3c5a-e378-4de4-a3f3-25344eb14ccd)",
+          "actual": "Free starter account with domain Del 10-08-2025 al 09-09-2025",
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "sample": "ES3958240",
+      "scores": {
+        "seller_vat": 0.0,
+        "seller_name": 0.4,
+        "buyer_vat": 1.0,
+        "buyer_name": 1.0,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.6218487394957983,
+        "line_prices": 1.0
+      },
+      "total_score": 0.6953,
+      "issues": [
+        {
+          "field": "seller.vat_id",
+          "type": "mismatch",
+          "expected": "B83834747",
+          "actual": "B883834747",
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "sample": "ES3961640",
+      "scores": {
+        "seller_vat": 0.0,
+        "seller_name": 0.5614035087719298,
+        "buyer_vat": 0.0,
+        "buyer_name": 1.0,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.9253691720590677,
+        "line_prices": 1.0
+      },
+      "total_score": 0.6537,
+      "issues": [
+        {
+          "field": "seller.vat_id",
+          "type": "mismatch",
+          "expected": "B83834747",
+          "actual": "B883834747",
+          "severity": "medium"
+        },
+        {
+          "field": "buyer.vat_id",
+          "type": "mismatch",
+          "expected": "ESB65779282",
+          "actual": "ES B65779282",
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "sample": "ES3966265",
+      "scores": {
+        "seller_vat": 1.0,
+        "seller_name": 1.0,
+        "buyer_vat": 1.0,
+        "buyer_name": 0.9696969696969697,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.16676915656839691,
+        "line_prices": 0.2
+      },
+      "total_score": 0.8169,
+      "issues": [
+        {
+          "field": "line_items[2].description",
+          "type": "missing_item",
+          "expected": "Zimbra Starter monthly pricing Del 26-08-2025 al 25-09-2025 Sin compromiso (UUID: c511e71b-1a1c-4ffc-853e-0d64f6da4dec)",
+          "actual": "",
+          "severity": "high"
+        },
+        {
+          "field": "line_items[3].description",
+          "type": "missing_item",
+          "expected": "Zimbra Starter monthly pricing Del 26-08-2025 al 25-09-2025 Sin compromiso (UUID: d6fe1c5f-a0c9-4a32-a7f6-acdf45233ad8)",
+          "actual": "",
+          "severity": "high"
+        },
+        {
+          "field": "line_items[4].description",
+          "type": "missing_item",
+          "expected": "Free starter account with domain Del 26-08-2025 al 25-09-2025 (UUID: 792667f6-219c-4219-9c93-ecl0ae3d1b7e)",
+          "actual": "",
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "sample": "ES3970571",
+      "scores": {
+        "seller_vat": 1.0,
+        "seller_name": 0.4,
+        "buyer_vat": 1.0,
+        "buyer_name": 0.9696969696969697,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.5125006614257666,
+        "line_prices": 0.4666666666666667
+      },
+      "total_score": 0.8394,
+      "issues": [
+        {
+          "field": "line_items[9].description",
+          "type": "missing_item",
+          "expected": "Unlimited traffic - 500Mbps bandwidth rental for 1 month Del 01-09-2025 al 30-09-2025 Fecha de finalización del compromiso : 26/11/2025",
+          "actual": "",
+          "severity": "high"
+        },
+        {
+          "field": "line_items[10].description",
+          "type": "missing_item",
+          "expected": "Unlimited traffic - 500Mbps bandwidth rental for 1 month Del 01-09-2025 al 30-09-2025 Fecha de finalización del compromiso : 10/03/2026",
+          "actual": "",
+          "severity": "high"
+        },
+        {
+          "field": "line_items[11].description",
+          "type": "missing_item",
+          "expected": "64GB DDR4 ECC 2133MHz rental for 1 month Del 01-09-2025 al 30-09-2025 Fecha de finalización del compromiso : 10/03/2026",
+          "actual": "",
+          "severity": "high"
+        },
+        {
+          "field": "line_items[12].description",
+          "type": "missing_item",
+          "expected": "2x SSD NVMe 450GB Datacenter Class Soft RAID rental for 1 month Del 01-09-2025 al 30-09-2025 Fecha de finalización del compromiso : 10/03/2026",
+          "actual": "",
+          "severity": "high"
+        },
+        {
+          "field": "line_items[13].description",
+          "type": "missing_item",
+          "expected": "RISE-LE-1 rental for 1 month (ns3020517.ip-149-202-85.eu) Del 01-09-2025 al 30-09-2025 Fecha de finalización del compromiso: 26/11/2025",
+          "actual": "",
+          "severity": "high"
+        },
+        {
+          "field": "line_items[14].description",
+          "type": "missing_item",
+          "expected": "RISE-LE-2 rental for 1 month (ns326130.ip-37-187-158.eu) Del 01-09-2025 al 30-09-2025 Fecha de finalización del compromiso: 10/03/2026",
+          "actual": "",
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "sample": "ES3986038",
+      "scores": {
+        "seller_vat": 0.0,
+        "seller_name": 0.5614035087719298,
+        "buyer_vat": 1.0,
+        "buyer_name": 1.0,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.6065573770491803,
+        "line_prices": 1.0
+      },
+      "total_score": 0.7059,
+      "issues": [
+        {
+          "field": "seller.vat_id",
+          "type": "mismatch",
+          "expected": "B83834747",
+          "actual": "B883834747",
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "sample": "ES3992187",
+      "scores": {
+        "seller_vat": 1.0,
+        "seller_name": 1.0,
+        "buyer_vat": 0.0,
+        "buyer_name": 1.0,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.7435476581269773,
+        "line_prices": 1.0
+      },
+      "total_score": 0.8615,
+      "issues": [
+        {
+          "field": "buyer.vat_id",
+          "type": "ocr_confusion",
+          "subtype": "letter_vs_number",
+          "expected": "ESB65779282",
+          "actual": "ES865779282",
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "sample": "ES3993597",
+      "scores": {
+        "seller_vat": 0.0,
+        "seller_name": 0.4,
+        "buyer_vat": 1.0,
+        "buyer_name": 1.0,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.6832826747720364,
+        "line_prices": 1.0
+      },
+      "total_score": 0.7045,
+      "issues": [
+        {
+          "field": "seller.vat_id",
+          "type": "mismatch",
+          "expected": "B83834747",
+          "actual": "B883834747",
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "sample": "ES3997535",
+      "scores": {
+        "seller_vat": 0.0,
+        "seller_name": 0.5614035087719298,
+        "buyer_vat": 1.0,
+        "buyer_name": 0.9696969696969697,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.9560185185185185,
+        "line_prices": 1.0
+      },
+      "total_score": 0.7562,
+      "issues": [
+        {
+          "field": "seller.vat_id",
+          "type": "mismatch",
+          "expected": "B83834747",
+          "actual": "B883834747",
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "sample": "Factura Adria Navarro",
+      "scores": {
+        "seller_vat": 0.0,
+        "seller_name": 1.0,
+        "buyer_vat": 1.0,
+        "buyer_name": 0.0,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.35294117647058826,
+        "line_prices": 1.0
+      },
+      "total_score": 0.6329,
+      "issues": [
+        {
+          "field": "seller.vat_id",
+          "type": "mismatch",
+          "expected": "53291244Z",
+          "actual": "37322251Z",
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "sample": "Factura Adrian Navarro",
+      "scores": {
+        "seller_vat": 0.0,
+        "seller_name": 1.0,
+        "buyer_vat": 1.0,
+        "buyer_name": 0.9859154929577465,
+        "invoice_number": 1.0,
+        "invoice_date": 0.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.32989690721649484,
+        "line_prices": 1.0
+      },
+      "total_score": 0.6185,
+      "issues": [
+        {
+          "field": "seller.vat_id",
+          "type": "mismatch",
+          "expected": "53291244Z",
+          "actual": "37322251Z",
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "sample": "Minuta oct 2025",
+      "scores": {
+        "seller_vat": 0.0,
+        "seller_name": 1.0,
+        "buyer_vat": 1.0,
+        "buyer_name": 0.0,
+        "invoice_number": 1.0,
+        "invoice_date": 1.0,
+        "amount": 1.0,
+        "vat_amount": 1.0,
+        "line_descriptions": 0.32989690721649484,
+        "line_prices": 1.0
+      },
+      "total_score": 0.6295,
+      "issues": [
+        {
+          "field": "seller.vat_id",
+          "type": "mismatch",
+          "expected": "53291244Z",
+          "actual": "37322251Z",
+          "severity": "medium"
+        }
+      ]
+    }
+  ]
+}

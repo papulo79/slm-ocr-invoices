@@ -1,0 +1,48 @@
+{
+  "seller": {
+    "name": "OVH HISPANO S.L.",
+    "vat_id": "B83834747",
+    "address": {
+      "postcode": "28014",
+      "street": "C/ Alcalá 21, 5ª planta",
+      "city": "Madrid",
+      "country": "ES",
+      "europe": "Y"
+    }
+  },
+  "invoice_number": "ES3952091",
+  "invoice_date": "2025-08-02",
+  "currency": "EUR",
+  "amount": 0.6,
+  "vat_amount": 0.13,
+  "withholding_tax_amount": 0.0,
+  "line_items": [
+    {
+      "description": "Zimbra Starter monthly pricing Del 02-08-2025 al 01-09-2025 Sin compromiso (UUID: 3e4dce4a-712e-485c-854b-ad6c4c993523)",
+      "quantity": 1,
+      "unit_price": 0.3,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "Zimbra Starter monthly pricing Del 02-08-2025 al 01-09-2025 Sin compromiso (UUID: a85eaf03-1b3e-42f6-b28a-580eb26a87b7)",
+      "quantity": 1,
+      "unit_price": 0.3,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    }
+  ],
+  "buyer": {
+    "name": "Zhintek Consultoria Tencologica SL",
+    "vat_id": "ESB65779282",
+    "address": {
+      "postcode": "25700",
+      "street": "c/ de la Sort 11, 1r",
+      "city": "La Seu d'Urgell",
+      "country": "ES",
+      "europe": "Y"
+    }
+  }
+}

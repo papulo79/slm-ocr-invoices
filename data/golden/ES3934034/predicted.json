@@ -1,0 +1,72 @@
+{
+  "seller": {
+    "name": "OVH HISPANO S.L.",
+    "vat_id": "B83834747",
+    "address": {
+      "postcode": "28014",
+      "street": "C/ Alcalá 21, 5ª planta",
+      "city": "Madrid",
+      "country": "ES",
+      "europe": "Y"
+    }
+  },
+  "invoice_number": "ES3934034",
+  "invoice_date": "2025-07-26",
+  "currency": "EUR",
+  "amount": 1.2,
+  "vat_amount": 0.19,
+  "withholding_tax_amount": 0.0,
+  "line_items": [
+    {
+      "description": "Zimbra Starter monthly pricing Del 26-07-2025 al 25-08-2025 Sin compromiso (UUID: 7088e019-dfa9-434a-96d6-653a3c7f8a70)",
+      "quantity": 1,
+      "unit_price": 0.3,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "Zimbra Starter monthly pricing Del 26-07-2025 al 25-08-2025 Sin compromiso (UUID: 792667f6-219c-4219-9c93-ecl0ae3d1b7e)",
+      "quantity": 1,
+      "unit_price": 0.3,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "Zimbra Starter monthly pricing Del 26-07-2025 al 25-08-2025 Sin compromiso (UUID: c511e71b-1a1c-4ffc-853e-0d64f6da4dec)",
+      "quantity": 1,
+      "unit_price": 0.3,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "Zimbra Starter monthly pricing Del 26-07-2025 al 25-08-2025 Sin compromiso (UUID: d6fe1c5f-a0c9-4a32-a7f6-acdf45233ad8)",
+      "quantity": 1,
+      "unit_price": 0.3,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "Free starter account with domain Del 26-07-2025 al 25-08-2025 (UUID: 792667f6-219c-4219-9c93-ecl0ae3d1b7e) - Descuento",
+      "quantity": 1,
+      "unit_price": -0.3,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    }
+  ],
+  "buyer": {
+    "name": "Zhitek Consultoria Tencológica SL",
+    "vat_id": "ESB65779282",
+    "address": {
+      "postcode": "25700",
+      "street": "c/ de la Sort 11, 1r",
+      "city": "La Seu d'Urgell",
+      "country": "ES",
+      "europe": "Y"
+    }
+  }
+}

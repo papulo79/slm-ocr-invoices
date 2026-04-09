@@ -197,7 +197,7 @@ def process_batch(input_dir: str, output_dir: str, config_path: str = "config.ya
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Batch OCR de facturas con LM Studio")
-    parser.add_argument("--input", default="/home/reverendo/Documentos/FacturasZT", help="Directorio con PDFs")
+    parser.add_argument("--input", required=True, help="Directorio con PDFs")
     parser.add_argument("--output", default="./resultados", help="Directorio de salida para JSONs")
     parser.add_argument("--config", default="config.yaml", help="Fichero de configuración")
     args = parser.parse_args()

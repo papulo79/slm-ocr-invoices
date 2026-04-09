@@ -26,6 +26,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Config con credenciales
+config.yaml
+
 # Data / uploads
 uploads/
 *.pdf
