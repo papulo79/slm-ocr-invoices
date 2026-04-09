@@ -1,0 +1,96 @@
+{
+  "seller": {
+    "name": "OVH HISPANO S.L.",
+    "vat_id": "B83834747",
+    "address": {
+      "postcode": "28014",
+      "street": "C/ Alcalá 21, 5ª planta",
+      "city": "Madrid",
+      "country": "ES",
+      "europe": "Y"
+    }
+  },
+  "invoice_number": "ES3918050",
+  "invoice_date": "2025-07-02",
+  "currency": "EUR",
+  "amount": 1.07,
+  "vat_amount": 0.22,
+  "withholding_tax_amount": 0.0,
+  "line_items": [
+    {
+      "description": "lauraduran.com - DNS Zone - Renew Del 25-06-2026 al 30-06-2026 Sin compromiso",
+      "quantity": 1,
+      "unit_price": 0.0,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "lauraduran.com - DNS Zone - Renew Del 25-07-2025 al 24-06-2026 Sin compromiso",
+      "quantity": 1,
+      "unit_price": 0.0,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "motorex.es - DNS Anycast - Renew Del 09-07-2025 al 08-06-2026 Sin compromiso",
+      "quantity": 1,
+      "unit_price": 1.0,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "motorex.es - DNS Anycast - Renew Del 09-06-2026 al 30-06-2026 Sin compromiso",
+      "quantity": 1,
+      "unit_price": 0.07,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "motorex.es - DNS Zone - Renew Del 09-07-2025 al 08-06-2026 Sin compromiso",
+      "quantity": 1,
+      "unit_price": 0.0,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "motorex.es - DNS Zone - Renew Del 09-06-2026 al 30-06-2026 Sin compromiso",
+      "quantity": 1,
+      "unit_price": 0.0,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "motosbadalona.com - DNS Zone - Renew Del 13-07-2025 al 12-06-2026 Sin compromiso",
+      "quantity": 1,
+      "unit_price": 0.0,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "motosbadalona.com - DNS Zone - Renew Del 13-06-2026 al 30-06-2026 Sin compromiso",
+      "quantity": 1,
+      "unit_price": 0.0,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    }
+  ],
+  "buyer": {
+    "name": "Zhitek Consultoria Tencológica SL",
+    "vat_id": "ESB65779282",
+    "address": {
+      "postcode": "25700",
+      "street": "c/ de la Sort 11, 1r",
+      "city": "La Seu d'Urgell",
+      "country": "ES",
+      "europe": "Y"
+    }
+  }
+}

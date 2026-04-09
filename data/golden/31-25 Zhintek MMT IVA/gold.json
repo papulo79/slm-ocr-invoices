@@ -1,0 +1,48 @@
+{
+  "seller": {
+    "name": "Mercedes Hernandez Palou",
+    "vat_id": "37322251J",
+    "address": {
+      "postcode": "08029",
+      "street": "c/ Calabria 277, 4º2ª",
+      "city": "Barcelona",
+      "country": "ES",
+      "europe": "Y"
+    }
+  },
+  "invoice_number": "31-25",
+  "invoice_date": "2025-12-01",
+  "currency": "EUR",
+  "amount": 1933.67,
+  "vat_amount": 406.91,
+  "withholding_tax_amount": -290.05,
+  "line_items": [
+    {
+      "description": "Informe pericial",
+      "quantity": 1,
+      "unit_price": 1958.67,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": -15.0
+    },
+    {
+      "description": "Gastos",
+      "quantity": 1,
+      "unit_price": -25.0,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    }
+  ],
+  "buyer": {
+    "name": "Zhitek Consultoría Tecnológica, S.L.",
+    "vat_id": "B65779282",
+    "address": {
+      "postcode": "25700",
+      "street": "C/ Sort, nº 11, planta 1ª, puerta 1ª",
+      "city": "Seu Urgell",
+      "country": "ES",
+      "europe": "Y"
+    }
+  }
+}

@@ -31,6 +31,10 @@ Las facturas españolas tienen un LAYOUT ESTÁNDAR de dos zonas bien diferenciad
 REGLA: Si encuentras datos de dirección del vendedor en el pie de página,
 SIEMPRE debes rellenar seller.address con esos datos. No los omitas.
 
+REGLA: Cuando busques buyer.vat_id, busca en la zona superior/derecha de la factura
+el recuadro del cliente. El identificador fiscal del buyer SIEMPRE tiene 9 caracteres
+(formato persona: 8dígitos+letra, formato empresa: letra+8dígitos).
+
 ═══════════════════════════════════════════════════
 IDENTIFICACIÓN DE NIF Y CIF — REGLAS CRÍTICAS
 ═══════════════════════════════════════════════════
@@ -39,16 +43,15 @@ DISTINGUE SIEMPRE entre:
 
   • NIF de persona física: 8 dígitos + 1 letra al final
     → Formato: 37322251J, 53291244Z, 12345678A
-    → Empieza SIEMPRE con dígito (0-9), NUNCA con letra
+    → Empieza SIEMPRE con dígito (0-9)
     → NO lleva prefijos de país (ES, FR, etc.)
-    → VALOR INCORRECTO: "B37322251J" — esto empieza con B, es un CIF malformado, el NIF real es "37322251J"
 
   • CIF de empresa: 1 letra + 8 dígitos
     → Formato: B65779282, B83834747, A28023495
     → Empieza SIEMPRE con letra (A, B, C, D, E, F, G, J, N, P, Q, R, S, U, V, W)
     → Eliminar prefijos de país si los tiene (ESB65779282 → B65779282)
 
-REGLA CRÍTICA PARA NIF DE PERSONA FÍSICA: Si ves un identificador que empieza con "B" seguido de dígitos y luego una letra (como "B37322251J"), esto NO es válido. El NIF de persona física SIEMPRE empieza con un dígito. El valor correcto está en otra parte del documento, buscando un patrón de 8 dígitos seguidos de una letra.
+NUNCA concatener fragmentos de diferentes campos. Si ves un valor como "B73622251J" o "B7805719", esto NO es un NIF/CIF válido. El NIF de persona física tiene exactamente 9 caracteres comenzando con dígito. El CIF de empresa tiene exactamente 9 caracteres comenzando con letra seguida de 8 dígitos. Si un valor no coincide con estos patrones exactos, es un ERROR de extracción.
 
 ATENCIÓN: No confundas NIF/CIF con:
   - Números de teléfono (suelen tener +34, 9 dígitos pero EMPIEZAN por 6, 7, 8 o 9)
@@ -63,18 +66,16 @@ VALIDACIÓN OBLIGATORIA DE VAT_ID
 
 DESPUÉS de extraer el vat_id de seller y buyer, VERIFICA que:
   1. Tiene exactamente 9 caracteres
-  2. Es o bien 8 dígitos + 1 letra mayúscula al final (NIF persona física, empieza con dígito)
-  3. O bien 1 letra mayúscula + 8 dígitos (CIF empresa, empieza con letra)
+  2. Es o bien 8 dígitos + 1 letra mayúscula al final (NIF persona física)
+  3. O bien 1 letra mayúscula + 8 dígitos (CIF empresa)
 
 Si el valor no cumple estos criterios, es INCORRECTO. Vuelve a buscar en el
 documento el valor correcto. NO aceptes valores como:
-  - "B73622251J" (empieza con B, no es NIF de persona física)
-  - "B7322251J" (8 caracteres, formato híbrido incorrecto)
-  - "B73222251" (9 caracteres pero empieza con B, no es NIF de persona física)
+  - "B73622251J" (10 caracteres, formato híbrido incorrecto)
   - "B7805719" (8 caracteres, incompleto)
   - "B7815936" (8 caracteres, incompleto)
-  - "B83834747" (válido, es un CIF de empresa)
-  - "37322251J" (válido, es un NIF de persona física)
+  - "53291244Z" (esto es un NIF de persona física, empieza con dígito)
+  - Cualquier valor con más o menos de 9 caracteres
 
 ═══════════════════════════════════════════════════
 CAMPOS A EXTRAER
@@ -84,7 +85,6 @@ CAMPOS A EXTRAER
    - name: Nombre legal de la empresa vendedora
    - vat_id: NIF/CIF sin prefijos de país. Eliminar siempre los prefijos "ES", "FR", "DE", etc.
      El resultado DEBE tener exactamente 9 caracteres.
-     ATENCIÓN: Si el seller es una persona física, el NIF empieza con dígito, NO con letra.
      Ejemplos: "ESB83834747" → "B83834747" / "ESB65779282" → "B65779282" / "37322251J" → "37322251J"
    - address (rellenar si se encuentra en el documento):
        postcode, street, city, country (código ISO), europe (Y/N)
@@ -114,42 +114,25 @@ CAMPOS A EXTRAER
 
 9. line_items (una entrada por cada línea de la factura):
    - description: texto COMPLETO de la línea tal como aparece en la factura.
-     IMPORTANTE: Las descripciones pueden ser muy largas (hasta 300+ caracteres).
-     Incluir TODO el texto sin excepción: referencias, UUIDs, códigos de servicio,
-     períodos de vigencia (ej: "Del 24-07-2025 al 23-07-2026"), nombres de productos,
-     especificaciones técnicas, información de compromiso, fechas de finalización.
-     NUNCA truncar, abbreviate ni omitir parte de la descripción.
-     Los UUIDs de referencia SIEMPRE van al final con el formato "Referencia: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-     Si ves "Referencia:" en una descripción, COPIA TODO including the UUID completo.
-     Si la descripción está vacía, es que no la has extraído correctamente — vuelve a buscarla.
-     Ejemplos de descripciones válidas y COMPLETAS:
+     IMPORTANTE: Las descripciones pueden ser muy largas (hasta 200+ caracteres).
+     Incluir TODO el texto: referencias, UUIDs, códigos de servicio, períodos
+     de vigencia (ej: "Del 24-07-2025 al 23-07-2026"), nombres de productos,
+     especificaciones técnicas. NUNCA truncar, abbreviate ni omitir parte
+     de la descripción. Si la descripción ocupa varias líneas en la factura,
+     uncomirla en una sola línea.
+     VERIFICACIÓN: La descripción NUNCA debe estar vacía. Si la factura tiene
+     una línea de item, esa línea tiene texto. Si la descripción está vacía,
+     es que no la has extraído correctamente — vuelve a buscarla.
+     Ejemplos de descripciones válidas:
        "Informe pericial"
        "Gastos"
-       "Vps with linux distribution"
-       "Free starter account with domain Del 10-07-2025 al 09-08-2025 (Referencia: 1c4b3c5a-e378-4de4-a3f3-25344eb14ccd)"
-       "Unlimited traffic - 500Mbps bandwidth rental for 1 month Del 01-09-2025 al 30-09-2025 Fecha de finalización del compromiso : 26/11/2025"
+       "Informes periciales"
+       "Factura número 28-25 · Servicio de hosting VPS Linux 2 vCPU 4GB RAM 80GB NVMe · Del 24-07-2025 al 23-07-2026 · Sin compromiso"
    - quantity: cantidad (usar 1 si no se especifica)
    - unit_price: precio unitario TAL COMO APARECE. Los descuentos tienen precio NEGATIVO.
    - vat_rate: porcentaje de IVA (usar 21.0 si no aparece explícitamente)
    - price_includes_vat: true o false (ver reglas abajo)
    - withholding_tax_rate: porcentaje de retención en negativo (ej: -15.0), o 0 si no aplica
-
-═══════════════════════════════════════════════════
-REGLAS PARA line_items
-═══════════════════════════════════════════════════
-
-- Cada línea de la factura es un elemento independiente. NO agrupar líneas.
-- Si hay líneas sin precio visible (solo descripción), still extraer la description completa.
-- Las líneas de descuento/regalo (GIFT) son líneas normales con unit_price negativo.
-- Las descripciones de servicios cloud (VPS, Linux, bandwidth, hosting) suelen contener:
-  → Nombre del producto/servicio
-  → Especificaciones técnicas (vCPU, RAM, disco, ancho de banda)
-  → Período de vigencia (fechas de inicio y fin)
-  → Condiciones (Sin compromiso, etc.) y fechas de finalización de compromiso
-  → UUIDs de referencia entre paréntesis al final
-  → Copiar TODO sin excepción.
-- VERIFICACIÓN: Cada line_item debe tener description con al menos 3 caracteres.
-  Si alguna línea de la factura no tiene descripción, BUSCA en el documento original.
 
 ═══════════════════════════════════════════════════
 REGLAS PARA price_includes_vat
@@ -168,6 +151,22 @@ REGLA 3 — Verificación matemática (SOLO si la factura no tiene "Base imponib
   - Si sum(quantity × unit_price) ≈ total SIN IVA → price_includes_vat: false
 
 REGLA 4: NO hagas conversiones de precios. Deja los valores tal como aparecen.
+  La API se encarga de los cálculos.
+
+═══════════════════════════════════════════════════
+REGLAS PARA line_items
+═══════════════════════════════════════════════════
+
+- NO agrupes líneas aunque sean similares o idénticas.
+- Cada línea de la factura es un elemento independiente en el array.
+- Si hay 4 líneas con el mismo nombre pero UUIDs distintos, son 4 elementos separados.
+- Las líneas de descuento/regalo (GIFT) son líneas normales con unit_price negativo.
+- Las descripciones de servicios cloud (VPS, Linux, etc.) suelen contener:
+  → Nombre del producto/servicio
+  → Especificaciones técnicas (vCPU, RAM, disco)
+  → Período de vigencia (fechas de inicio y fin)
+  → Condiciones (Sin compromiso, etc.)
+  → Copiar TODO sin excepción.
 
 ═══════════════════════════════════════════════════
 ESTRUCTURA JSON REQUERIDA
@@ -230,15 +229,13 @@ CHECKLIST FINAL ANTES DE DEVOLVER EL JSON
 
 Antes de enviar el JSON, verifica cada uno de estos puntos:
 
-□ seller.vat_id tiene exactamente 9 caracteres
-□ seller.vat_id empieza con dígito si es persona física, con letra si es empresa
-□ seller.vat_id NO tiene formato híbrido incorrecto (ej: "B37322251J" es ERROR)
+□ seller.vat_id tiene exactamente 9 caracteres (letra+8dígitos o 8dígitos+letra)
+□ seller.vat_id NO tiene formato híbrido incorrecto (ej: "B73622251J" es ERROR)
 □ buyer.vat_id tiene exactamente 9 caracteres — si tiene más o menos, es ERROR
 □ buyer.vat_id NO es un número de teléfono ni una referencia de producto
 □ invoice_number NO está vacío — buscar "Factura", "Número", "Factura nº"
-□ Todas las descripciones de line_items tienen al menos 3 caracteres (no están vacías)
+□ Las descripciones de line_items tienen al menos 3 caracteres (no están vacías)
 □ Las descripciones de line_items contienen TODO el texto original, sin truncar
-□ Si ves "Referencia:" seguido de UUID, el UUID completo está en la descripción
 □ El JSON está completo con todas las llaves y corchetes cerrados
 
 Si algún campo está vacío después de verificar, vuelve a buscar en el documento.

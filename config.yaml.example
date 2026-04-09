@@ -3,6 +3,11 @@ lmstudio:
   api_key: "lm-studio"   # LM Studio no requiere clave real
   model: "mistralai/ministral-3-3b"  # nombre exacto del modelo en LM Studio
 
+proposer:
+  base_url: "https://api.minimax.io/v1"
+  api_key: "TU_API_KEY_AQUI"
+  model: "MiniMax-M2.7"
+
 processing:
   dpi: 300             # resolución para convertir PDF a imagen
   first_page_only: false  # true = solo procesa la primera página
@@ -10,4 +15,3 @@ processing:
 extraction:
   prompt_file: "prompt.txt"      # system prompt enviado al modelo
   schema_file: "schema.json"     # JSON schema para structured output
-

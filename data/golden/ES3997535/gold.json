@@ -1,0 +1,56 @@
+{
+  "seller": {
+    "name": "OVH HISPANO S.L.",
+    "vat_id": "B83834747",
+    "address": {
+      "postcode": "28014",
+      "street": "C/ Alcalá 21, 5ª planta",
+      "city": "Madrid",
+      "country": "ES",
+      "europe": "Y"
+    }
+  },
+  "invoice_number": "ES3997535",
+  "invoice_date": "2025-09-18",
+  "currency": "EUR",
+  "amount": 0.39,
+  "vat_amount": 0.08,
+  "withholding_tax_amount": 0.0,
+  "line_items": [
+    {
+      "description": "Zimbra Starter monthly pricing prorrateado a 13 días Del 18-09-2025 al 30-09-2025 Sin compromiso (UUID: 03363db4-324d-45d5-abf5-9787f6608b74)",
+      "quantity": 1,
+      "unit_price": 0.13,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "Zimbra Starter monthly pricing prorrateado a 13 días Del 18-09-2025 al 30-09-2025 Sin compromiso (UUID: cf9f8bfe-cd20-4975-8124-8f55cf5db339)",
+      "quantity": 1,
+      "unit_price": 0.13,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    },
+    {
+      "description": "Zimbra Starter monthly pricing prorrateado a 13 días Del 18-09-2025 al 30-09-2025 Sin compromiso (UUID: ebf22fe0-40c5-4921-a4cc-55f5d946f83f)",
+      "quantity": 1,
+      "unit_price": 0.13,
+      "vat_rate": 21.0,
+      "price_includes_vat": false,
+      "withholding_tax_rate": 0.0
+    }
+  ],
+  "buyer": {
+    "name": "Zhitek Consultoria Tencologica SL",
+    "vat_id": "ESB65779282",
+    "address": {
+      "postcode": "25700",
+      "street": "c/ de la Sort 11, 1r",
+      "city": "La Seu d'Urgell",
+      "country": "ES",
+      "europe": "Y"
+    }
+  }
+}
