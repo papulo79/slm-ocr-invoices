@@ -133,7 +133,6 @@ def run_ocr_paged(
     # Páginas 2+: solo line_items con contexto
     total_pages = len(images)
     for page_idx, page_image in enumerate(images[1:], start=2):
-        last_description = line_items[-1]["description"] if line_items else ""
         filled_prompt = continuation_prompt.format(
             page_number=page_idx,
             total_pages=total_pages,
@@ -141,7 +140,6 @@ def run_ocr_paged(
             seller_name=result.get("seller", {}).get("name", ""),
             seller_vat=result.get("seller", {}).get("vat_id", ""),
             extracted_count=len(line_items),
-            last_description=last_description,
         )
         page_result = run_ocr(
             client, model, continuation_schema, filled_prompt, [page_image]
