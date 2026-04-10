@@ -72,7 +72,7 @@ def main() -> None:
     for i, (name, images, gold) in enumerate(dataset, 1):
         print(f"[{i:02d}/{len(dataset)}] {name} ...", end=" ", flush=True)
         try:
-            pred = adapter.run_ocr(client, model, schema, prompt, images)
+            pred = adapter.run_ocr_paged(client, model, schema, prompt, images)
             print("OK")
         except Exception as exc:
             print(f"ERROR: {exc}")

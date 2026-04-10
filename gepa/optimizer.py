@@ -132,7 +132,7 @@ def run(
         failed_names: list[str] = []
         for name, images, gold in dataset:
             try:
-                pred = adapter.run_ocr(
+                pred = adapter.run_ocr_paged(
                     client, model, schema, current_prompt, images
                 )
             except Exception as exc:
