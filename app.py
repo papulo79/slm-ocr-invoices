@@ -1,6 +1,5 @@
-import base64
-import io
 import json
+import sys
 from pathlib import Path
 
 import streamlit as st
@@ -8,6 +7,10 @@ import yaml
 from openai import OpenAI
 from pdf2image import convert_from_bytes
 from PIL import Image
+
+ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT))
+from gepa import adapter  # noqa: E402
 
 st.set_page_config(page_title="OCR Facturas", layout="wide")
 
@@ -32,44 +35,9 @@ def pdf_to_images(pdf_bytes: bytes, dpi: int = 200) -> list[Image.Image]:
     return convert_from_bytes(pdf_bytes, dpi=dpi)
 
 
-def image_to_base64(image: Image.Image) -> str:
-    buf = io.BytesIO()
-    image.save(buf, format="PNG")
-    return base64.b64encode(buf.getvalue()).decode()
-
-
 def pdf_to_base64(pdf_bytes: bytes) -> str:
+    import base64
     return base64.b64encode(pdf_bytes).decode()
-
-
-def call_model(client: OpenAI, config: dict, images: list[Image.Image]) -> dict:
-    prompt, schema = load_extraction_config(config)
-
-    image_content = [
-        {
-            "type": "image_url",
-            "image_url": {"url": f"data:image/png;base64,{image_to_base64(img)}"},
-        }
-        for img in images
-    ]
-
-    response = client.chat.completions.create(
-        model=config["lmstudio"]["model"],
-        messages=[
-            {"role": "system", "content": prompt},
-            {"role": "user", "content": image_content},
-        ],
-        response_format={
-            "type": "json_schema",
-            "json_schema": {
-                "name": "invoice_extraction",
-                "strict": True,
-                "schema": schema,
-            },
-        },
-    )
-    raw = response.choices[0].message.content
-    return json.loads(raw)
 
 
 def render_pdf_embed(pdf_bytes: bytes, key: str) -> None:
@@ -112,7 +80,9 @@ def process_file(client: OpenAI, config: dict, name: str, pdf_bytes: bytes) -> N
         st.markdown("**Respuesta del modelo**")
         with st.spinner("Consultando modelo..."):
             try:
-                result = call_model(client, config, images)
+                prompt, schema = load_extraction_config(config)
+                model = config["lmstudio"]["model"]
+                result = adapter.run_ocr_paged(client, model, schema, prompt, images)
                 st.json(result)
             except json.JSONDecodeError as e:
                 st.error(f"El modelo no devolvió JSON válido: {e}")

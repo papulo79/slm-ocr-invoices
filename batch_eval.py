@@ -8,8 +8,6 @@ Uso:
 """
 
 import argparse
-import base64
-import io
 import json
 import sys
 import time
@@ -19,6 +17,10 @@ import yaml
 from openai import OpenAI
 from pdf2image import convert_from_bytes
 from PIL import Image
+
+ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT))
+from gepa import adapter  # noqa: E402
 
 
 def load_config(config_path: str = "config.yaml") -> dict:
@@ -37,39 +39,6 @@ def pdf_to_images(pdf_bytes: bytes, dpi: int = 200, first_only: bool = False) ->
     images = convert_from_bytes(pdf_bytes, dpi=dpi)
     return images[:1] if first_only else images
 
-
-def image_to_base64(image: Image.Image) -> str:
-    buf = io.BytesIO()
-    image.save(buf, format="PNG")
-    return base64.b64encode(buf.getvalue()).decode()
-
-
-def call_model(client: OpenAI, config: dict, prompt: str, schema: dict, images: list[Image.Image]) -> dict:
-    image_content = [
-        {
-            "type": "image_url",
-            "image_url": {"url": f"data:image/png;base64,{image_to_base64(img)}"},
-        }
-        for img in images
-    ]
-
-    response = client.chat.completions.create(
-        model=config["lmstudio"]["model"],
-        messages=[
-            {"role": "system", "content": prompt},
-            {"role": "user", "content": image_content},
-        ],
-        response_format={
-            "type": "json_schema",
-            "json_schema": {
-                "name": "invoice_extraction",
-                "strict": True,
-                "schema": schema,
-            },
-        },
-    )
-    raw = response.choices[0].message.content
-    return json.loads(raw)
 
 
 def evaluate_result(filename: str, result: dict) -> dict:
@@ -126,6 +95,7 @@ def process_batch(input_dir: str, output_dir: str, config_path: str = "config.ya
     dpi = config["processing"].get("dpi", 200)
     first_only = config["processing"].get("first_page_only", False)
 
+    model = config["lmstudio"]["model"]
     client = OpenAI(
         base_url=config["lmstudio"]["base_url"],
         api_key=config["lmstudio"].get("api_key", "lm-studio"),
@@ -152,7 +122,7 @@ def process_batch(input_dir: str, output_dir: str, config_path: str = "config.ya
         try:
             pdf_bytes = pdf_file.read_bytes()
             images = pdf_to_images(pdf_bytes, dpi=dpi, first_only=first_only)
-            result = call_model(client, config, prompt, schema, images)
+            result = adapter.run_ocr_paged(client, model, schema, prompt, images)
 
             # Guardar JSON individual
             out_file = output_path / f"{pdf_file.stem}.json"

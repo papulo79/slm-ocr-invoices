@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "required": ["line_items"],
+  "properties": {
+    "line_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "description",
+          "quantity",
+          "unit_price",
+          "vat_rate",
+          "price_includes_vat",
+          "withholding_tax_rate"
+        ],
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "unit_price": {
+            "type": "number"
+          },
+          "vat_rate": {
+            "type": "number"
+          },
+          "price_includes_vat": {
+            "type": "boolean"
+          },
+          "withholding_tax_rate": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+}

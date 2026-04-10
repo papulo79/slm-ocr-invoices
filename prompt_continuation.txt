@@ -1,0 +1,27 @@
+Estás analizando la página {page_number} de {total_pages} de una factura multipágina.
+
+CONTEXTO DE LA FACTURA:
+  Número de factura: {invoice_number}
+  Vendedor: {seller_name} ({seller_vat})
+  Líneas ya extraídas en páginas anteriores: {extracted_count}
+  Última línea extraída: "{last_description}"
+
+TAREA:
+Extrae ÚNICAMENTE las líneas de productos/servicios visibles en ESTA página.
+
+CRÍTICO: Debes generar el JSON COMPLETO. No pares hasta cerrar todos los corchetes y llaves.
+
+REGLAS:
+1. Extrae TODAS las líneas visibles en esta página sin excepción
+2. Copia cada descripción EXACTAMENTE como aparece en la factura:
+   - Incluye todo el texto: nombre, fechas, "Sin compromiso", etc.
+   - Si la línea tiene "Referencia:" o un UUID, inclúyelo al final de la descripción
+3. Si la página solo contiene subtotales, totales o pie de factura sin líneas de producto, devuelve line_items vacío: []
+
+CAMPOS POR LÍNEA:
+  - description: texto completo del producto/servicio
+  - quantity: cantidad (usa 1 si no se indica)
+  - unit_price: precio unitario sin IVA
+  - vat_rate: tipo de IVA como decimal (0.21 para 21%)
+  - price_includes_vat: true si el precio ya incluye IVA, false si es precio neto
+  - withholding_tax_rate: retención IRPF como decimal (0.15 para 15%), 0 si no hay

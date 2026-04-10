@@ -20,8 +20,6 @@ Uso:
 """
 
 import argparse
-import base64
-import io
 import json
 import sys
 import time
@@ -33,6 +31,8 @@ from pdf2image import convert_from_bytes
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+from gepa import adapter  # noqa: E402
 
 
 def load_config(config_path: Path) -> dict:
@@ -51,42 +51,12 @@ def pdf_to_images(pdf_bytes: bytes, dpi: int) -> list[Image.Image]:
     return convert_from_bytes(pdf_bytes, dpi=dpi)
 
 
-def image_to_base64(image: Image.Image) -> str:
-    buf = io.BytesIO()
-    image.save(buf, format="PNG")
-    return base64.b64encode(buf.getvalue()).decode()
-
-
-def call_model(client: OpenAI, config: dict, prompt: str, schema: dict, images: list[Image.Image]) -> dict:
-    image_content = [
-        {
-            "type": "image_url",
-            "image_url": {"url": f"data:image/png;base64,{image_to_base64(img)}"},
-        }
-        for img in images
-    ]
-    response = client.chat.completions.create(
-        model=config["lmstudio"]["model"],
-        messages=[
-            {"role": "system", "content": prompt},
-            {"role": "user", "content": image_content},
-        ],
-        response_format={
-            "type": "json_schema",
-            "json_schema": {
-                "name": "invoice_extraction",
-                "strict": True,
-                "schema": schema,
-            },
-        },
-    )
-    return json.loads(response.choices[0].message.content)
-
 
 def process_pdf(
     pdf_file: Path,
     output_dir: Path,
     client: OpenAI | None,
+    model: str,
     config: dict,
     prompt: str,
     schema: dict,
@@ -116,7 +86,7 @@ def process_pdf(
         return "ok"
 
     # 2. Llamar al modelo
-    result = call_model(client, config, prompt, schema, images)
+    result = adapter.run_ocr_paged(client, model, schema, prompt, images)
 
     # 3. Guardar predicted.json
     predicted_file.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -140,6 +110,7 @@ def main() -> None:
     config = load_config(Path(args.config))
     prompt, schema = load_extraction_config(config)
     dpi = config["processing"].get("dpi", 200)
+    model = config["lmstudio"]["model"]
     output_path = Path(args.output)
 
     client = None
@@ -163,7 +134,7 @@ def main() -> None:
         start = time.time()
         try:
             status = process_pdf(
-                pdf_file, output_path, client, config, prompt, schema, dpi,
+                pdf_file, output_path, client, model, config, prompt, schema, dpi,
                 args.skip_model, args.force,
             )
             elapsed = time.time() - start
